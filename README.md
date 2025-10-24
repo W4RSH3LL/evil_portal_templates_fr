@@ -10,3 +10,6 @@ Des templates de portail captives pour le Wi-Fi Pineapple (FR).
 
 ## Template 3: (**SFR**)
 ![image info](/screenshots/sfr.jpg)
+
+## Template 4: (**Bouygue**)
+![image info](/screenshots/bouygue.jpg)
