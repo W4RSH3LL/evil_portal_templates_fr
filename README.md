@@ -5,3 +5,5 @@ Des templates de portail captives pour le Wi-Fi Pineapple (FR).
 (Le Logo du cafe apparait bien une fois mit sur le Wi-Fi Pineapple)
 ![image info](/screenshots/cafe_wifi.jpg)
 
+## Template 2: (**Orange Free Wifi**)
+![image info](/screenshots/orange.jpg)
