@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portail Captif - Accès invité</title>
-<script src="tailwind.js"></script>
+<link rel="stylesheet" href="tailwind.min.css">
 <script>
   tailwind.config = {
     theme: {
@@ -194,4 +194,5 @@
 </script>
 </body>
 </html>
+
 
